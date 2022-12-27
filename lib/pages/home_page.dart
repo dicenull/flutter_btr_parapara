@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 // ref: https://bocchi.rocks/
@@ -21,9 +24,24 @@ class HomePage extends HookConsumerWidget {
 }
 
 class _Body extends HookConsumerWidget {
+  final pattern = [-1, -2, -4, -6, -10, 10000, 2];
+  final bocchiPattern = [-1, -1, -1, -2, -4, -6, 2];
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size.width / 10;
+    final count = useState(0);
+    final outerPos = pattern[count.value];
+    final innerPos = outerPos * 3;
+    final bocchiPos = bocchiPattern[count.value];
+
+    useEffect(() {
+      final timer = Timer.periodic(const Duration(milliseconds: 500), (_) {
+        count.value = (count.value + 1) % pattern.length;
+      });
+
+      return timer.cancel;
+    }, const []);
 
     return Stack(
       children: [
@@ -31,57 +49,59 @@ class _Body extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Transform.translate(
-              offset: Offset(size / 2, 0),
+              offset: Offset(size / bocchiPos, 0),
               child: _KessokuBand(hitoriColor, size),
             ),
             Transform.translate(
-              offset: Offset(size / 6, 0),
+              offset: Offset(size / innerPos, 0),
               child: _KessokuBand(nijikaColor, size),
             ),
             Transform.translate(
-              offset: Offset(-size / 6, 0),
+              offset: Offset(-size / innerPos, 0),
               child: _KessokuBand(ryoColor, size),
             ),
             Transform.translate(
-              offset: Offset(-size / 2, 0),
+              offset: Offset(-size / outerPos, 0),
               child: _KessokuBand(ikuyoColor, size),
             ),
           ],
         ),
         // 下半分を逆順に描画することで重なりを表現
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Transform.translate(
-              offset: Offset(-size * (5 / 2.0), 0),
-              child: ClipRect(
-                clipper: _BottomHalfClipper(),
-                child: _KessokuBand(hitoriColor, size),
+        // 場所は決め打ち
+        if (count.value == pattern.length - 1)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Transform.translate(
+                offset: Offset(-size * (5 / outerPos), 0),
+                child: ClipRect(
+                  clipper: _BottomHalfClipper(),
+                  child: _KessokuBand(hitoriColor, size),
+                ),
               ),
-            ),
-            Transform.translate(
-              offset: Offset(-size * (5 / 6.0), 0),
-              child: ClipRect(
-                clipper: _BottomHalfClipper(),
-                child: _KessokuBand(nijikaColor, size),
+              Transform.translate(
+                offset: Offset(-size * (5 / innerPos), 0),
+                child: ClipRect(
+                  clipper: _BottomHalfClipper(),
+                  child: _KessokuBand(nijikaColor, size),
+                ),
               ),
-            ),
-            Transform.translate(
-              offset: Offset(size * (5 / 6.0), 0),
-              child: ClipRect(
-                clipper: _BottomHalfClipper(),
-                child: _KessokuBand(ryoColor, size),
+              Transform.translate(
+                offset: Offset(size * (5 / innerPos), 0),
+                child: ClipRect(
+                  clipper: _BottomHalfClipper(),
+                  child: _KessokuBand(ryoColor, size),
+                ),
               ),
-            ),
-            Transform.translate(
-              offset: Offset(size * (5 / 2.0), 0),
-              child: ClipRect(
-                clipper: _BottomHalfClipper(),
-                child: _KessokuBand(ikuyoColor, size),
+              Transform.translate(
+                offset: Offset(size * (5 / outerPos), 0),
+                child: ClipRect(
+                  clipper: _BottomHalfClipper(),
+                  child: _KessokuBand(ikuyoColor, size),
+                ),
               ),
-            ),
-          ].reversed.toList(),
-        ),
+            ].reversed.toList(),
+          ),
       ],
     );
   }
