@@ -25,7 +25,7 @@ class HomePage extends HookConsumerWidget {
 
 class _Body extends HookConsumerWidget {
   final pattern = [-1, -2, -4, -6, -10, 10000, 2];
-  final bocchiPattern = [-1, -1, -1, -2, -4, -6, 2];
+  final bocchiPattern = [-1, -1.1, -1.2, -2, -4, -6, 2];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
