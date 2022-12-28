@@ -68,49 +68,53 @@ class _Body extends HookConsumerWidget {
         ),
         // 下半分を逆順に描画することで重なりを表現
         // 場所は決め打ち
-        if (count.value == pattern.length - 1)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Transform.translate(
-                offset: Offset(-size * (5 / outerPos), 0),
-                child: ClipRect(
-                  clipper: _BottomHalfClipper(),
-                  child: _KessokuBand(hitoriColor, size),
-                ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Transform.translate(
+              offset: Offset(size / bocchiPos, 0),
+              child: ClipRect(
+                clipper: _BottomRightClipper(),
+                child: _KessokuBand(hitoriColor, size),
               ),
-              Transform.translate(
-                offset: Offset(-size * (5 / innerPos), 0),
-                child: ClipRect(
-                  clipper: _BottomHalfClipper(),
-                  child: _KessokuBand(nijikaColor, size),
-                ),
+            ),
+            Transform.translate(
+              offset: Offset(size / innerPos, 0),
+              child: ClipRect(
+                clipper: _BottomRightClipper(),
+                child: _KessokuBand(nijikaColor, size),
               ),
-              Transform.translate(
-                offset: Offset(size * (5 / innerPos), 0),
-                child: ClipRect(
-                  clipper: _BottomHalfClipper(),
-                  child: _KessokuBand(ryoColor, size),
-                ),
+            ),
+            Transform.translate(
+              offset: Offset(-size / innerPos, 0),
+              child: ClipRect(
+                clipper: _BottomRightClipper(),
+                child: _KessokuBand(ryoColor, size),
               ),
-              Transform.translate(
-                offset: Offset(size * (5 / outerPos), 0),
-                child: ClipRect(
-                  clipper: _BottomHalfClipper(),
-                  child: _KessokuBand(ikuyoColor, size),
-                ),
+            ),
+            Transform.translate(
+              offset: Offset(-size / outerPos, 0),
+              child: ClipRect(
+                clipper: _BottomRightClipper(),
+                child: _KessokuBand(ikuyoColor, size),
               ),
-            ].reversed.toList(),
-          ),
+            ),
+          ],
+        ),
       ],
     );
   }
 }
 
-class _BottomHalfClipper extends CustomClipper<Rect> {
+class _BottomRightClipper extends CustomClipper<Rect> {
   @override
   Rect getClip(Size size) {
-    return Rect.fromLTWH(0, size.height / 2, size.width, size.height);
+    return Rect.fromLTWH(
+      size.width / 2,
+      size.height / 2,
+      size.width,
+      size.height,
+    );
   }
 
   @override
