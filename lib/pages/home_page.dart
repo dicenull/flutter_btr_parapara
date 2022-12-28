@@ -43,63 +43,46 @@ class _Body extends HookConsumerWidget {
       return timer.cancel;
     }, const []);
 
+    final positions = [
+      Offset(size / bocchiPos, 0),
+      Offset(size / innerPos, 0),
+      Offset(-size / innerPos, 0),
+      Offset(-size / outerPos, 0),
+    ];
+    final bandMembers = [
+      _KessokuBand(hitoriColor, size),
+      _KessokuBand(nijikaColor, size),
+      _KessokuBand(ryoColor, size),
+      _KessokuBand(ikuyoColor, size),
+    ];
+
     return Stack(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Transform.translate(
-              offset: Offset(size / bocchiPos, 0),
-              child: _KessokuBand(hitoriColor, size),
-            ),
-            Transform.translate(
-              offset: Offset(size / innerPos, 0),
-              child: _KessokuBand(nijikaColor, size),
-            ),
-            Transform.translate(
-              offset: Offset(-size / innerPos, 0),
-              child: _KessokuBand(ryoColor, size),
-            ),
-            Transform.translate(
-              offset: Offset(-size / outerPos, 0),
-              child: _KessokuBand(ikuyoColor, size),
-            ),
-          ],
+          children: bandMembers
+              .asMap()
+              .entries
+              .map((e) => Transform.translate(
+                    offset: positions[e.key],
+                    child: e.value,
+                  ))
+              .toList(),
         ),
-        // 下半分を逆順に描画することで重なりを表現
-        // 場所は決め打ち
+        // 手前に来る部分を上書きで描画することで交差しているように見せる
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Transform.translate(
-              offset: Offset(size / bocchiPos, 0),
-              child: ClipRect(
-                clipper: _BottomRightClipper(),
-                child: _KessokuBand(hitoriColor, size),
-              ),
-            ),
-            Transform.translate(
-              offset: Offset(size / innerPos, 0),
-              child: ClipRect(
-                clipper: _BottomRightClipper(),
-                child: _KessokuBand(nijikaColor, size),
-              ),
-            ),
-            Transform.translate(
-              offset: Offset(-size / innerPos, 0),
-              child: ClipRect(
-                clipper: _BottomRightClipper(),
-                child: _KessokuBand(ryoColor, size),
-              ),
-            ),
-            Transform.translate(
-              offset: Offset(-size / outerPos, 0),
-              child: ClipRect(
-                clipper: _BottomRightClipper(),
-                child: _KessokuBand(ikuyoColor, size),
-              ),
-            ),
-          ],
+          children: bandMembers
+              .asMap()
+              .entries
+              .map((e) => Transform.translate(
+                    offset: positions[e.key],
+                    child: ClipRect(
+                      clipper: _BottomRightClipper(),
+                      child: e.value,
+                    ),
+                  ))
+              .toList(),
         ),
       ],
     );
